@@ -1,0 +1,198 @@
+#include<iostream>
+#include<string>
+#include<iomanip>
+#include<fstream>
+#include<cmath>
+#include<cstdlib>
+using namespace std;
+void gauss_jordan(double** arr, double** arr_1);
+int len;
+
+int main(int argc,char *argv[]){
+	string str;
+	str=argv[0];
+	cout<<str<<endl;
+	str=argv[1];
+	cout<<str<<endl;
+
+	ifstream in(argv[1]);
+	ofstream out(argv[2]);
+
+	in>>len;  
+	long long m1[len][len];
+	long long m2[len][len];
+	long temp;
+	
+	for(int j=0;j<len;j++){
+    for(int i=0;i<len;i++){
+     	in>>temp;
+    	m1[j][i]=temp;	
+  }	
+  }
+  
+  for(int j=0;j<len;j++){
+    for(int i=0;i<len;i++){
+    	in>>temp;
+    	if(temp!='\n'){
+    		m2[j][i]=temp;
+		}	
+  }	
+  }
+  
+  
+  cout<<"A + B: "<<endl;
+  out<<"A + B: "<<endl;
+  for(int j=0;j<len;j++){
+    for(int i=0;i<len;i++){
+    	
+    	
+    		cout<<setw(20)<<right<<m1[j][i]+m2[j][i];
+    		out<<setw(20)<<right<<m1[j][i]+m2[j][i];
+			
+  }	
+  cout<<endl;
+  out<<endl;
+  }
+  
+  cout<<"A - B: "<<endl;
+  out<<"A - B: "<<endl;
+  for(int j=0;j<len;j++){
+    for(int i=0;i<len;i++){
+    	
+    	
+    		cout<<setw(20)<<right<<m1[j][i]-m2[j][i];
+			out<<setw(20)<<right<<m1[j][i]-m2[j][i];
+  }	
+  cout<<endl;
+  out<<endl;
+  }
+  
+  long long sum=0;
+  cout<<"A * B: "<<endl;
+  out<<"A * B: "<<endl;
+  for(int j=0;j<len;j++){
+    for(int i=0;i<len;i++){
+		sum=0;
+    	for(int k=0;k<len;k++){
+    	sum+=m1[j][k]*m2[k][i];	
+		}
+    		cout<<setw(20)<<right<<sum;
+    		out<<setw(20)<<right<<sum;
+			
+  }	
+  cout<<endl;
+  out<<endl;
+  }
+     
+  cout<<"A / B: "<<endl;
+  out<<"A / B: "<<endl;
+  
+	double** arr;
+	double** arr_1; 
+	arr = new double* [len];
+	arr_1 = new double* [len];
+	for (int i = 0; i < len; i++) {
+		arr[i] = new double[len];
+		arr_1[i] = new double[len];
+	}
+	
+	for (int i = 0; i < len; i++) { 
+		for (int j = 0; j < len; j++) {
+			arr_1[i][j] = 0; 
+		}
+		arr_1[i][i] = 1; 
+	}
+	
+	for (int i = 0; i < len; i++) {
+		for (int j = 0; j < len; j++) {
+		arr[i][j] = static_cast<double>(m2[i][j]);
+	
+	}	
+	}
+	
+	gauss_jordan(arr, arr_1);
+
+	if (arr[len - 1][len - 1] == 0) {
+		cout << "Matrix B can't be inversed!!!!!" << endl;
+	out << "Matrix B can't be inversed!!!!!" << endl;
+		return 0;
+	}
+    if(arr[0][0]>0||arr[0][0]<=0){
+    	
+	}else{
+		cout << "Matrix B can't be inversed!!!!!" << endl;
+	out << "Matrix B can't be inversed!!!!!" << endl;
+		exit(1);
+	}
+	
+	double s;
+	for(int j=0;j<len;j++){
+    for(int i=0;i<len;i++){
+		s=0;
+    	for(int k=0;k<len;k++){
+    	s+=static_cast<double>(m1[j][k])*arr_1[k][i];	
+		}	
+    	cout << setw(20)<< fixed << right<<setprecision(3) << s;
+    	out << setw(20)<< fixed <<right<< setprecision(3) << s;
+			
+  }	
+  cout<<endl;
+  out<<endl;
+  }
+	in.close();
+	out.close();
+		for (int i = 0; i < len; i++) { 
+		delete[] arr[i];
+		delete[] arr_1[i];
+	}
+	delete[] arr;
+	delete[] arr_1;
+	return 0;
+  }
+
+void setToOne(int i, double** arr, double** arr_1) { 
+	double temp;
+	int j;
+	temp = arr[i][i];
+	for (j = 0; j < len; j++) {
+		arr[i][j] = arr[i][j] / temp;
+		arr_1[i][j] = arr_1[i][j] / temp;
+	}
+}
+
+void setToZero(int i, double** arr, double** arr_1) { 
+	int j, k;
+	double tmp;
+	for (j = 0; j < len; j++) {
+		if (j == i)
+			continue;
+		tmp = -1 * arr[j][i];
+		for (k = 0; k < len; k++) {
+			arr[j][k] += (tmp * arr[i][k]);
+			arr_1[j][k] += (tmp * arr_1[i][k]);
+		}
+	}
+}
+
+void gauss_jordan(double** arr, double** arr_1) { 
+	int i, j;
+	for (i = 0; i < len; i++) {
+		if (arr[i][i] == 0) {
+			if (i == (len - 1)) {
+				break;
+			}
+			else {
+				for (j = 0; j < len; j++) {
+					arr[i][j] += arr[i + 1][j];
+					arr_1[i][j] += arr_1[i + 1][j];
+				}
+				setToOne(i, arr, arr_1);
+				setToZero(i, arr, arr_1);
+			}
+		}
+		else {
+			setToOne(i, arr, arr_1);
+			setToZero(i, arr, arr_1);
+		}
+	}
+}
